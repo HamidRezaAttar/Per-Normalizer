@@ -11,7 +11,7 @@ setup(
     url='https://github.com/HamidRezaAttar/Per-Normalizer',
     keywords='Normalizer',
     install_requires=[
-        'parsivar',
+        'parsivar', 'tqdm'
     ],
 
 )
