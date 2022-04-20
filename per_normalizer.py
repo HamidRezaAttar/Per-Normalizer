@@ -373,7 +373,8 @@ class Normalizer:
             "ی",
         ]
 
-    def _replace_rep(self, t):
+    @staticmethod
+    def _replace_rep(t):
         """Replace repetitions at the character level: ccc -> c"""
 
         def __replace_rep(m):
@@ -383,7 +384,8 @@ class Normalizer:
         re_rep = re.compile(r"(\S)(\1{2,})")
         return re_rep.sub(__replace_rep, t)
 
-    def _replace_wrap(self, t):
+    @staticmethod
+    def _replace_wrap(t):
         """Replace word repetitions: word word word -> word"""
 
         def __replace_wrap(m):
