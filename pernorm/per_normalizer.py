@@ -395,7 +395,7 @@ class Normalizer:
         re_wrap = re.compile(r"(\b\w+\W+)(\1{2,})")
         return re_wrap.sub(__replace_wrap, t)
 
-    def _normalize_text(self, x):
+    def normalize_text(self, x):
         """normalize a sentence"""
 
         x = str(x)
@@ -419,7 +419,7 @@ class Normalizer:
         """normalize list of sentences"""
 
         if use_tqdm:
-            text = [self._normalize_text(x) for x in tqdm(text)]
+            text = [self.normalize_text(x) for x in tqdm(text)]
         else:
-            text = [self._normalize_text(x) for x in text]
+            text = [self.normalize_text(x) for x in text]
         return text
