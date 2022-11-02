@@ -371,6 +371,24 @@ class Normalizer:
             "ک",
             "گ",
             "ی",
+            "؟",
+            "،",
+            ".",
+            ",",
+            ";",
+            ":",
+            "?",
+            "!",
+            "?",
+            "-",
+            "[",
+            "]",
+            "(",
+            ")",
+            "{",
+            "}",
+            "‘",
+            "“",
         ]
 
     @staticmethod
@@ -395,6 +413,27 @@ class Normalizer:
         re_wrap = re.compile(r"(\b\w+\W+)(\1{2,})")
         return re_wrap.sub(__replace_wrap, t)
 
+    def format_punc(self, text):
+        text = re.sub("""((?<=[A-Za-z\d()])\.(?=[A-Za-z]{2})|(?<=[A-Za-z]{2})\.(?=[A-Za-z\d]))""", '. ', text)
+        text = re.sub("""((?<=[A-Za-z\d()]),(?=[A-Za-z]{2})|(?<=[A-Za-z]{2}),(?=[A-Za-z\d]))""", ', ', text)
+        text = re.sub("""((?<=[A-Za-z\d{}])\.(?=[A-Za-z]{2})|(?<=[A-Za-z]{2})\.(?=[A-Za-z\d]))""", '. ', text)
+        text = re.sub("""((?<=[A-Za-z\d{}]),(?=[A-Za-z]{2})|(?<=[A-Za-z]{2}),(?=[A-Za-z\d]))""", ', ', text)
+        text = re.sub("""((?<=[A-Za-z\d[]])\.(?=[A-Za-z]{2})|(?<=[A-Za-z]{2})\.(?=[A-Za-z\d]))""", '. ', text)
+        text = re.sub("""((?<=[A-Za-z\d[]]),(?=[A-Za-z]{2})|(?<=[A-Za-z]{2}),(?=[A-Za-z\d]))""", ', ', text)
+        text = re.sub(r'(?<=[،؟;:?!])(?=\S)', r' ', text)  # add space after punctuations
+        text = re.sub(r'\s([،؟.,;:?!"](?:\s|$))', r'\1', text)  # remove space before punctuations
+        text = re.sub(r"\s?(\(.*?\))\s?", r" \1 ", text)  # Add space before and after ( and )
+        text = re.sub(r"\s?(\{.*?\})\s?", r" \1 ", text)  # Add space before and after { and }
+        text = re.sub(r"\s?(\[.*?])\s?", r" \1 ", text)  # Add space before and after [ and ]
+        # Remove space after & before '(' and '[' and '{'
+        text = re.sub(r'(\s([?,.!"]))|(?<=[\[(\{])(.*?)(?=[)\]\}])', lambda x: x.group().strip(), text)
+        text = re.sub(r'[.,;:?!]+(?=[.,;:?!])', '', text)  # Replace multiple punctuations with last one
+        # text = re.sub(r'(?<=-)\s*|\s*(?=-)', '', text)  # Remove space before and after hyphen
+        # text = re.sub(r'(?<=/)\s*|\s*(?=/)', '', text)  # no space before or after the forward slash /
+        # text = re.sub('([&@])', r' \1 ', text)  # Space before and after of "&" and "@"
+        text = re.sub(' +', ' ', text)  # Remove multiple space
+        return text
+
     def normalize_text(self, x):
         """normalize a sentence"""
 
@@ -413,6 +452,7 @@ class Normalizer:
         x = re.sub(r"\s+", " ", x)  # remove more than one white spaces with space
         x = self._replace_rep(x)
         x = self._replace_wrap(x)
+        x = self.format_punc(x)
         return x.strip()
 
     def normalize_texts(self, text, use_tqdm=False):
